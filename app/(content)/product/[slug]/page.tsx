@@ -11,10 +11,11 @@ import { productReviewSchema } from "@/lib/schema";
 export async function generateMetadata({
   params,
 }: {
-  params: { slug: string };
+  params: Promise<{ slug: string }>;
 }): Promise<Metadata> {
+  const { slug } = await params;
   const product = await prisma.product.findUnique({
-    where: { slug: params.slug },
+    where: { slug },
   });
 
   if (!product) {
@@ -43,15 +44,16 @@ export async function generateMetadata({
 export default async function ProductPage({
   params,
 }: {
-  params: { slug: string };
+  params: Promise<{ slug: string }>;
 }) {
+  const { slug } = await params;
   const product = await prisma.product.findUnique({
-    where: { slug: params.slug },
+    where: { slug },
   });
 
   if (!product) return notFound();
 
-  const review = loadReviewBySlug(params.slug);
+  const review = loadReviewBySlug(slug);
 
   return (
     <article className="max-w-3xl mx-auto p-8">

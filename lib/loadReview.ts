@@ -4,7 +4,7 @@ import matter from "gray-matter";
 
 const reviewsDirectory = path.join(
   process.cwd(),
-  "src/content/reviews"
+  "content/reviews"
 );
 
 export function loadReviewBySlug(slug: string) {

@@ -1,12 +1,15 @@
 import { prisma } from "@/lib/prisma";
+import ComparisonTable from "@/components/ComparisonTable";
+import { notFound } from "next/navigation";
 
 export async function generateMetadata({
   params,
 }: {
-  params: { slug: string };
+  params: Promise<{ slug: string }>;
 }) {
+  const { slug } = await params;
   const comparison = await prisma.comparison.findUnique({
-    where: { slug: params.slug },
+    where: { slug },
     include: {
       productA: true,
       productB: true,
@@ -24,25 +27,48 @@ export async function generateMetadata({
 export default async function ComparisonPage({
   params,
 }: {
-  params: { slug: string };
+  params: Promise<{ slug: string }>;
 }) {
+  const { slug } = await params;
   const comparison = await prisma.comparison.findUnique({
-    where: { slug: params.slug },
+    where: { slug },
     include: {
       productA: true,
       productB: true,
+      features: true,
     },
   });
 
-  if (!comparison) return null;
+  if (!comparison) return notFound();
 
   return (
-    <main className="p-8">
-      <h1 className="text-2xl font-bold">
+    <main className="max-w-5xl mx-auto p-8">
+      <h1 className="text-3xl font-bold">
         {comparison.productA.name} vs {comparison.productB.name}
       </h1>
 
-      <p className="mt-4">{comparison.summary}</p>
+      <p className="mt-4 text-gray-700">
+        {comparison.summary}
+      </p>
+
+      <ComparisonTable
+        productA={comparison.productA.name}
+        productB={comparison.productB.name}
+        affiliateA={comparison.productA.affiliateUrl}
+        affiliateB={comparison.productB.affiliateUrl}
+        winner={
+          comparison.winner === comparison.productA.name ? "A" : "B"
+        }
+        features={comparison.features}
+      />
+
+      <section className="mt-10">
+        <h2 className="text-xl font-semibold">Final Verdict</h2>
+        <p className="mt-2">
+          {comparison.winner} is the better choice for most teams based on
+          automation depth and scalability.
+        </p>
+      </section>
     </main>
   );
 }
