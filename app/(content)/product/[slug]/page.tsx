@@ -1,12 +1,10 @@
 import { prisma } from "@/lib/prisma";
 import { loadReviewBySlug } from "@/lib/loadReview";
 import { notFound } from "next/navigation";
-import ReactMarkdown from "react-markdown";
-import remarkGfm from "remark-gfm";
-import rehypeSlug from "rehype-slug";
+import MarkdownRenderer from "@/components/MarkdownRenderer";
 import type { Metadata } from "next";
 import Link from "next/link";
-import { ChevronRight, ShieldCheck, Star } from "lucide-react"; 
+import { ChevronRight, ShieldCheck, Star } from "lucide-react";
 
 import {
   productReviewSchema,
@@ -60,7 +58,7 @@ export default async function ProductPage({
 
   return (
     <div className="min-h-screen bg-slate-950 text-slate-300">
-      
+
       <header className="border-b border-slate-800 bg-slate-900 py-12 md:py-20">
         <div className="mx-auto max-w-7xl px-6">
           <div className="mb-6 flex items-center gap-2 text-xs font-bold uppercase tracking-widest text-slate-500">
@@ -83,37 +81,32 @@ export default async function ProductPage({
                 {product.description}
               </p>
             </div>
-            
+
             <div className="hidden shrink-0 md:block">
-               <div className="rounded-xl border border-slate-700 bg-slate-800 p-6 text-center shadow-xl">
-                  <div className="mb-2 text-3xl font-bold text-white">9.2<span className="text-lg text-slate-500">/10</span></div>
-                  <div className="mb-4 flex justify-center text-yellow-500"><Star fill="currentColor" size={16} /><Star fill="currentColor" size={16} /><Star fill="currentColor" size={16} /><Star fill="currentColor" size={16} /><Star fill="currentColor" size={16} /></div>
-                  <AffiliateCTA
-                    href={product.affiliateUrl}
-                    label="Visit Website"
-                    productSlug={product.slug}
-                  />
-               </div>
+              <div className="rounded-xl border border-slate-700 bg-slate-800 p-6 text-center shadow-xl">
+                <div className="mb-2 text-3xl font-bold text-white">9.2<span className="text-lg text-slate-500">/10</span></div>
+                <div className="mb-4 flex justify-center text-yellow-500"><Star fill="currentColor" size={16} /><Star fill="currentColor" size={16} /><Star fill="currentColor" size={16} /><Star fill="currentColor" size={16} /><Star fill="currentColor" size={16} /></div>
+                <AffiliateCTA
+                  href={product.affiliateUrl}
+                  label="Visit Website"
+                  productSlug={product.slug}
+                />
+              </div>
             </div>
           </div>
         </div>
       </header>
 
       <div className="mx-auto grid max-w-7xl gap-12 px-6 py-12 lg:grid-cols-12">
-        
+
         <main className="lg:col-span-8">
-          
+
           {review && (
-        // ✅ CORRECTED: Only one article tag
-        <article className="prose prose-lg prose-invert prose-indigo max-w-none">
-          <ReactMarkdown
-            remarkPlugins={[remarkGfm]}
-            rehypePlugins={[rehypeSlug]}
-          >
-            {review.content}
-          </ReactMarkdown>
-        </article>
-      )}
+            // ✅ CORRECTED: Only one article tag
+            <article className="max-w-none">
+              <MarkdownRenderer content={review.content} />
+            </article>
+          )}
 
           {review?.meta?.faqs?.length > 0 && (
             <div className="mt-16 rounded-2xl border border-slate-800 bg-slate-900/50 p-8">
@@ -124,7 +117,7 @@ export default async function ProductPage({
 
           {product.author && (
             <div className="mt-12 border-t border-slate-800 pt-12">
-               <AuthorBox
+              <AuthorBox
                 author={{
                   ...product.author,
                   avatarUrl: product.author.avatarUrl ?? undefined,
@@ -137,7 +130,7 @@ export default async function ProductPage({
 
         <aside className="hidden lg:block lg:col-span-4">
           <div className="sticky top-24 space-y-8">
-            
+
             <div className="rounded-2xl border border-indigo-500/30 bg-indigo-500/10 p-6 shadow-2xl">
               <h3 className="mb-2 text-lg font-bold text-white">Ready to get started?</h3>
               <p className="mb-6 text-sm text-slate-300">
@@ -172,7 +165,7 @@ export default async function ProductPage({
         label={`Try ${product.name}`}
         href={product.affiliateUrl}
       />
-      
+
       <div className="h-24 md:hidden" />
 
       <script
