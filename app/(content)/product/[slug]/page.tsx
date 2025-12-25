@@ -9,6 +9,12 @@ import { productReviewSchema } from "@/lib/schema";
 import FAQBlock from "@/components/FAQBlock";
 import { faqSchema } from "@/lib/schema";
 import StickyMobileCTA from "@/components/StickyMobileCTA";
+import InternalLinks from "@/components/InternalLinks";
+import {
+  getProductComparisons,
+  getRelatedProducts,
+} from "@/lib/internalLinks";
+
 
 export async function generateMetadata({
   params,
@@ -53,7 +59,11 @@ export default async function ProductPage({
     where: { slug },
   });
 
+
   if (!product) return notFound();
+
+  const comparisons = await getProductComparisons(product.id);
+  const relatedProducts = await getRelatedProducts(product.id);
 
   const review = loadReviewBySlug(slug);
 
@@ -91,6 +101,12 @@ export default async function ProductPage({
       {review?.meta?.faqs?.length > 0 && (
         <FAQBlock faqs={review?.meta?.faqs ?? []} />
       )}
+
+      <InternalLinks
+        comparisons={comparisons}
+        relatedProducts={relatedProducts}
+      />
+
     </article>
 
     {/* Sticky Mobile CTA */}

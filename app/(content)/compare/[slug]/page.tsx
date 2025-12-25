@@ -61,6 +61,31 @@ export default async function ComparisonPage({
         }
         features={comparison.features}
       />
+      <section className="mt-12">
+        <h2 className="text-xl font-semibold mb-4">
+          Learn More About Each Tool
+        </h2>
+
+        <ul className="list-disc pl-6 space-y-2">
+          <li>
+            <a
+              href={`/product/${comparison.productA.slug}`}
+              className="text-blue-600 hover:underline"
+            >
+              {comparison.productA.name} Review
+            </a>
+          </li>
+          <li>
+            <a
+              href={`/product/${comparison.productB.slug}`}
+              className="text-blue-600 hover:underline"
+            >
+              {comparison.productB.name} Review
+            </a>
+          </li>
+        </ul>
+      </section>
+
 
       <section className="mt-10">
         <h2 className="text-xl font-semibold">Final Verdict</h2>
