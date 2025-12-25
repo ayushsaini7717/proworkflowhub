@@ -8,7 +8,7 @@ import type { Metadata } from "next";
 import { productReviewSchema } from "@/lib/schema";
 import FAQBlock from "@/components/FAQBlock";
 import { faqSchema } from "@/lib/schema";
-
+import StickyMobileCTA from "@/components/StickyMobileCTA";
 
 export async function generateMetadata({
   params,
@@ -58,6 +58,7 @@ export default async function ProductPage({
   const review = loadReviewBySlug(slug);
 
   return (
+  <>
     <article className="max-w-3xl mx-auto p-8">
       <h1 className="text-3xl font-bold">{product.name} Review</h1>
 
@@ -65,7 +66,7 @@ export default async function ProductPage({
         {product.description}
       </p>
 
-      {/* Affiliate CTA */}
+      {/* Top CTA */}
       <a
         href={product.affiliateUrl}
         rel="nofollow sponsored"
@@ -85,26 +86,49 @@ export default async function ProductPage({
           </ReactMarkdown>
         </section>
       )}
+
+      {/* FAQ UI */}
       {review?.meta?.faqs?.length > 0 && (
         <FAQBlock faqs={review?.meta?.faqs ?? []} />
       )}
-      {review?.meta?.faqs?.length > 0 && (
+    </article>
 
+    {/* Sticky Mobile CTA */}
+    <StickyMobileCTA
+      label={`Try ${product.name}`}
+      href={product.affiliateUrl}
+    />
+
+    {/* Spacer for sticky CTA */}
+    <div className="h-20 md:hidden" />
+
+    {/* Product Review Schema (ALWAYS) */}
+    <script
+      type="application/ld+json"
+      dangerouslySetInnerHTML={{
+        __html: JSON.stringify(
+          productReviewSchema({
+            name: product.name,
+            rating: 9,
+            description: product.description,
+            slug: product.slug,
+          })
+        ),
+      }}
+    />
+
+    {/* FAQ Schema (ONLY if FAQs exist) */}
+    {review?.meta?.faqs?.length > 0 && (
       <script
         type="application/ld+json"
         dangerouslySetInnerHTML={{
           __html: JSON.stringify(
-            productReviewSchema({
-              name: product.name,
-              rating: 9,
-              description: product.description,
-              slug: product.slug,
-            })
+            faqSchema(review?.meta?.faqs ?? [])
           ),
         }}
       />
-      )}
+    )}
+  </>
+);
 
-    </article>
-  );
 }
