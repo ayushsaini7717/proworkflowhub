@@ -28,6 +28,8 @@ model Product {
   reviews         Review[]
   comparisonsA    Comparison[] @relation("ProductA")
   comparisonsB    Comparison[] @relation("ProductB")
+  authorId String?
+  author   Author? @relation(fields: [authorId], references: [id])
 }
 
 model Review {
@@ -72,5 +74,19 @@ model Subscriber {
   email     String   @unique
   source    String?
   createdAt DateTime @default(now())
+}
+
+model Author {
+  id          String   @id @default(uuid())
+  name        String
+  slug        String   @unique
+  bio         String
+  role        String
+  avatarUrl  String?
+  linkedinUrl String?
+  twitterUrl  String?
+  websiteUrl  String?
+  createdAt  DateTime @default(now())
+  products    Product[]
 }
 

@@ -5,9 +5,12 @@ import ReactMarkdown from "react-markdown";
 import remarkGfm from "remark-gfm";
 import rehypeSlug from "rehype-slug";
 import type { Metadata } from "next";
-import { productReviewSchema } from "@/lib/schema";
+import {
+  productReviewSchema,
+  faqSchema,
+  authorSchema,
+} from "@/lib/schema";
 import FAQBlock from "@/components/FAQBlock";
-import { faqSchema } from "@/lib/schema";
 import StickyMobileCTA from "@/components/StickyMobileCTA";
 import InternalLinks from "@/components/InternalLinks";
 import {
@@ -15,6 +18,7 @@ import {
   getRelatedProducts,
 } from "@/lib/internalLinks";
 import EmailCapture from "@/components/EmailCapture";
+import AuthorBox from "@/components/AuthorBox";
 
 
 export async function generateMetadata({
@@ -23,28 +27,27 @@ export async function generateMetadata({
   params: Promise<{ slug: string }>;
 }): Promise<Metadata> {
   const { slug } = await params;
+
   const product = await prisma.product.findUnique({
     where: { slug },
   });
 
   if (!product) {
-    return {
-      title: "Product Not Found",
-    };
+    return { title: "Product Not Found" };
   }
 
   return {
     title: `${product.name} Review (2025): Features, Pricing & Verdict`,
-    description: `In-depth ${product.name} review based on real testing. Features, pricing, pros, cons, and who should use it.`,
+    description: `In-depth ${product.name} review based on real testing.`,
     openGraph: {
       title: `${product.name} Review (2025)`,
-      description: `Honest ${product.name} review with real-world testing and screenshots.`,
+      description: `Honest ${product.name} review with real-world testing.`,
       type: "article",
     },
     twitter: {
       card: "summary_large_image",
       title: `${product.name} Review (2025)`,
-      description: `Real-world ${product.name} review for teams and founders.`,
+      description: `Real-world ${product.name} review.`,
     },
   };
 }
@@ -56,99 +59,117 @@ export default async function ProductPage({
   params: Promise<{ slug: string }>;
 }) {
   const { slug } = await params;
+
   const product = await prisma.product.findUnique({
     where: { slug },
+    include: { author: true },
   });
-
 
   if (!product) return notFound();
 
   const comparisons = await getProductComparisons(product.id);
   const relatedProducts = await getRelatedProducts(product.id);
-
   const review = loadReviewBySlug(slug);
 
   return (
-  <>
-    <article className="max-w-3xl mx-auto p-8">
-      <h1 className="text-3xl font-bold">{product.name} Review</h1>
+    <>
+      <article className="max-w-3xl mx-auto p-8">
+        <h1 className="text-3xl font-bold">{product.name} Review</h1>
 
-      <p className="mt-4 text-gray-700">
-        {product.description}
-      </p>
+        <p className="mt-4 text-gray-700">{product.description}</p>
 
-      {/* Top CTA */}
-      <a
+        <a
+          href={product.affiliateUrl}
+          rel="nofollow sponsored"
+          className="inline-block mt-6 bg-black text-white px-6 py-3 rounded"
+        >
+          Try {product.name}
+        </a>
+
+        {review && (
+          <section className="prose prose-lg mt-12 max-w-none">
+            <ReactMarkdown
+              remarkPlugins={[remarkGfm]}
+              rehypePlugins={[rehypeSlug]}
+            >
+              {review.content}
+            </ReactMarkdown>
+          </section>
+        )}
+
+        {review?.meta?.faqs?.length > 0 && (
+          <FAQBlock faqs={review?.meta?.faqs ?? []} />
+        )}
+
+        <EmailCapture source={`product:${product.slug}`} />
+        {product.author && (
+          <AuthorBox
+            author={{
+              ...product.author,
+              avatarUrl: product.author.avatarUrl ?? undefined,
+              linkedinUrl: product.author.linkedinUrl ?? undefined,
+            }}
+          />
+        )}
+
+        <InternalLinks
+          comparisons={comparisons}
+          relatedProducts={relatedProducts}
+        />
+      </article>
+
+      <StickyMobileCTA
+        label={`Try ${product.name}`}
         href={product.affiliateUrl}
-        rel="nofollow sponsored"
-        className="inline-block mt-6 bg-black text-white px-6 py-3 rounded"
-      >
-        Try {product.name}
-      </a>
-
-      {/* Markdown Review */}
-      {review && (
-        <section className="prose prose-lg mt-12 max-w-none">
-          <ReactMarkdown
-            remarkPlugins={[remarkGfm]}
-            rehypePlugins={[rehypeSlug]}
-          >
-            {review.content}
-          </ReactMarkdown>
-        </section>
-      )}
-
-      {/* FAQ UI */}
-      {review?.meta?.faqs?.length > 0 && (
-        <FAQBlock faqs={review?.meta?.faqs ?? []} />
-      )}
-
-      <EmailCapture source={`product:${product.slug}`} />
-
-
-      <InternalLinks
-        comparisons={comparisons}
-        relatedProducts={relatedProducts}
       />
 
-    </article>
+      <div className="h-20 md:hidden" />
 
-    {/* Sticky Mobile CTA */}
-    <StickyMobileCTA
-      label={`Try ${product.name}`}
-      href={product.affiliateUrl}
-    />
-
-    {/* Spacer for sticky CTA */}
-    <div className="h-20 md:hidden" />
-
-    {/* Product Review Schema (ALWAYS) */}
-    <script
-      type="application/ld+json"
-      dangerouslySetInnerHTML={{
-        __html: JSON.stringify(
-          productReviewSchema({
-            name: product.name,
-            rating: 9,
-            description: product.description,
-            slug: product.slug,
-          })
-        ),
-      }}
-    />
-
-    {/* FAQ Schema (ONLY if FAQs exist) */}
-    {review?.meta?.faqs?.length > 0 && (
+      {/* Product Review Schema */}
       <script
         type="application/ld+json"
         dangerouslySetInnerHTML={{
           __html: JSON.stringify(
-            faqSchema(review?.meta?.faqs ?? [])
+            productReviewSchema({
+              name: product.name,
+              rating: 9,
+              description: product.description,
+              slug: product.slug,
+            })
           ),
         }}
       />
-    )}
-  </>
-);
 
+      {/* FAQ Schema */}
+      {review?.meta?.faqs?.length > 0 && (
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{
+            __html: JSON.stringify(
+              faqSchema(review?.meta?.faqs ?? [])
+            ),
+          }}
+        />
+      )}
+
+      {/* Author Schema */}
+      {product.author && (
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{
+            __html: JSON.stringify(
+              authorSchema({
+                name: product.author.name,
+                role: product.author.role,
+                linkedinUrl:
+                  product.author.linkedinUrl ?? undefined,
+                websiteUrl:
+                  product.author.websiteUrl ?? undefined,
+              })
+            ),
+          }}
+        />
+      )}
+    </>
+  );
 }

@@ -45,3 +45,31 @@ export function faqSchema(faqs: { question: string; answer: string }[]) {
   };
 }
 
+export function authorSchema(author: {
+  name: string;
+  role: string;
+  linkedinUrl?: string;
+  websiteUrl?: string;
+}) {
+  return {
+    "@context": "https://schema.org",
+    "@type": "Person",
+    name: author.name,
+    jobTitle: author.role,
+    sameAs: [
+      author.linkedinUrl,
+      author.websiteUrl,
+    ].filter(Boolean),
+  };
+}
+
+
+export function organizationSchema() {
+  return {
+    "@context": "https://schema.org",
+    "@type": "Organization",
+    name: "The Pro-Workflow Hub",
+    url: "https://theproworkflowhub.com",
+    logo: "https://theproworkflowhub.com/logo.png",
+  };
+}
