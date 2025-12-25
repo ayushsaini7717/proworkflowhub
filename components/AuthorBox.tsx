@@ -1,4 +1,5 @@
 import Image from "next/image";
+import Link from "next/link";
 
 interface Author {
   name: string;
@@ -6,6 +7,7 @@ interface Author {
   bio: string;
   avatarUrl?: string;
   linkedinUrl?: string;
+  slug: string;
 }
 
 export default function AuthorBox({ author }: { author: Author }) {
@@ -23,7 +25,12 @@ export default function AuthorBox({ author }: { author: Author }) {
         )}
 
         <div>
-          <p className="font-semibold">{author.name}</p>
+          <Link
+            href={`/author/${author.slug}`}
+            className="font-semibold text-blue-600 hover:underline"
+          >
+            {author.name}
+          </Link>
           <p className="text-sm text-gray-600">{author.role}</p>
           <p className="mt-2 text-sm">{author.bio}</p>
 
