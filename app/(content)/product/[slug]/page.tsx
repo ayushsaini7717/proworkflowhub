@@ -14,6 +14,7 @@ import {
   getProductComparisons,
   getRelatedProducts,
 } from "@/lib/internalLinks";
+import EmailCapture from "@/components/EmailCapture";
 
 
 export async function generateMetadata({
@@ -101,6 +102,9 @@ export default async function ProductPage({
       {review?.meta?.faqs?.length > 0 && (
         <FAQBlock faqs={review?.meta?.faqs ?? []} />
       )}
+
+      <EmailCapture source={`product:${product.slug}`} />
+
 
       <InternalLinks
         comparisons={comparisons}
