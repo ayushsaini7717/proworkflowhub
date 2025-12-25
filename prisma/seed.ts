@@ -1,11 +1,16 @@
-import {prisma} from '../lib/prisma'
+import { prisma } from '../lib/prisma'
 
 async function main() {
   console.log("🌱 Seeding database...");
 
-  // 1. Products
-  const activeCampaign = await prisma.product.create({
-    data: {
+  await prisma.comparisonFeature.deleteMany();
+  await prisma.comparison.deleteMany();
+  await prisma.review.deleteMany();
+
+  const activeCampaign = await prisma.product.upsert({
+    where: { slug: "activecampaign" },
+    update: {},
+    create: {
       name: "ActiveCampaign",
       slug: "activecampaign",
       description:
@@ -17,8 +22,10 @@ async function main() {
     },
   });
 
-  const hubspot = await prisma.product.create({
-    data: {
+  const hubspot = await prisma.product.upsert({
+    where: { slug: "hubspot" },
+    update: {},
+    create: {
       name: "HubSpot",
       slug: "hubspot",
       description:
@@ -30,7 +37,6 @@ async function main() {
     },
   });
 
-  // 2. Reviews
   await prisma.review.create({
     data: {
       productId: activeCampaign.id,
@@ -55,8 +61,7 @@ async function main() {
     },
   });
 
-  // 3. Comparison
-  await prisma.comparison.create({
+  const comparison = await prisma.comparison.create({
     data: {
       slug: "activecampaign-vs-hubspot-for-agencies",
       summary:
@@ -65,6 +70,31 @@ async function main() {
       productAId: activeCampaign.id,
       productBId: hubspot.id,
     },
+  });
+
+  await prisma.comparisonFeature.createMany({
+    data: [
+      {
+        comparisonId: comparison.id,
+        label: "Automation Depth",
+        valueA: "Advanced multi-step automations",
+        valueB: "Basic workflows",
+        highlightA: true,
+      },
+      {
+        comparisonId: comparison.id,
+        label: "Ease of Use",
+        valueA: "Steep learning curve",
+        valueB: "Very beginner friendly",
+        highlightB: true,
+      },
+      {
+        comparisonId: comparison.id,
+        label: "Best For",
+        valueA: "Agencies & advanced teams",
+        valueB: "Small teams & startups",
+      },
+    ],
   });
 
   console.log("✅ Seeding complete");

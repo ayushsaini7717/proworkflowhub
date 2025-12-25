@@ -51,4 +51,18 @@ model Comparison {
 
   productA   Product @relation("ProductA", fields: [productAId], references: [id])
   productB   Product @relation("ProductB", fields: [productBId], references: [id])
+  features   ComparisonFeature[]
+}
+
+
+model ComparisonFeature {
+  id            String @id @default(uuid())
+  comparisonId  String
+  label         String
+  valueA        String
+  valueB        String
+  highlightA    Boolean @default(false)
+  highlightB    Boolean @default(false)
+
+  comparison    Comparison @relation(fields: [comparisonId], references: [id])
 }
