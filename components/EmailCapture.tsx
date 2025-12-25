@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import { trackEvent } from "@/lib/analytics";
 
 export default function EmailCapture({
   source,
@@ -12,6 +13,10 @@ export default function EmailCapture({
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
+
+    trackEvent("email_signup", {
+      source,
+    });
 
     await fetch("/api/subscribe", {
       method: "POST",

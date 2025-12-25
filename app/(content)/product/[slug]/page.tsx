@@ -19,6 +19,7 @@ import {
 } from "@/lib/internalLinks";
 import EmailCapture from "@/components/EmailCapture";
 import AuthorBox from "@/components/AuthorBox";
+import AffiliateCTA from "@/components/AffiliateCTA";
 
 
 export async function generateMetadata({
@@ -78,13 +79,12 @@ export default async function ProductPage({
 
         <p className="mt-4 text-gray-700">{product.description}</p>
 
-        <a
-          href={product.affiliateUrl}
-          rel="nofollow sponsored"
-          className="inline-block mt-6 bg-black text-white px-6 py-3 rounded"
-        >
-          Try {product.name}
-        </a>
+       <AffiliateCTA
+        href={product.affiliateUrl}
+        label={`Try ${product.name}`}
+        productSlug={product.slug}
+      />
+
 
         {review && (
           <section className="prose prose-lg mt-12 max-w-none">
