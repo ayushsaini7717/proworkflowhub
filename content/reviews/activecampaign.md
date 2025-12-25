@@ -1,9 +1,15 @@
 ---
 title: ActiveCampaign Review (2025)
 productSlug: activecampaign
-testedDays: 14
 rating: 9
-bestFor: Agencies & automation-heavy teams
+testedDays: 14
+faqs:
+  - question: Is ActiveCampaign good for small businesses?
+    answer: Yes, but it is best suited for small businesses that need advanced automation rather than simple newsletters.
+  - question: Does ActiveCampaign have a free plan?
+    answer: No, ActiveCampaign does not offer a free plan, but it provides a 14-day free trial.
+  - question: ActiveCampaign vs HubSpot – which is better?
+    answer: ActiveCampaign is better for automation-heavy teams, while HubSpot is easier for beginners.
 ---
 
 ## Overview

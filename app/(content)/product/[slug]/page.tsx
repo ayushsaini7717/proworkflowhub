@@ -6,6 +6,8 @@ import remarkGfm from "remark-gfm";
 import rehypeSlug from "rehype-slug";
 import type { Metadata } from "next";
 import { productReviewSchema } from "@/lib/schema";
+import FAQBlock from "@/components/FAQBlock";
+import { faqSchema } from "@/lib/schema";
 
 
 export async function generateMetadata({
@@ -83,6 +85,11 @@ export default async function ProductPage({
           </ReactMarkdown>
         </section>
       )}
+      {review?.meta?.faqs?.length > 0 && (
+        <FAQBlock faqs={review?.meta?.faqs ?? []} />
+      )}
+      {review?.meta?.faqs?.length > 0 && (
+
       <script
         type="application/ld+json"
         dangerouslySetInnerHTML={{
@@ -96,6 +103,7 @@ export default async function ProductPage({
           ),
         }}
       />
+      )}
 
     </article>
   );

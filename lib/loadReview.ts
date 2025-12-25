@@ -19,6 +19,9 @@ export function loadReviewBySlug(slug: string) {
 
   return {
     content,
-    meta: data,
+  meta: {
+    ...data,
+    faqs: data.faqs || [],
+  }
   };
 }
