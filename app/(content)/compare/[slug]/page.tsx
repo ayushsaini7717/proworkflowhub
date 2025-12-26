@@ -2,8 +2,9 @@ import { prisma } from "@/lib/prisma";
 import ComparisonTable from "@/components/ComparisonTable";
 import { notFound } from "next/navigation";
 import Link from "next/link";
-import { ChevronRight, FileText, Trophy, ArrowRight } from "lucide-react";
+import { FileText, Trophy, ArrowRight } from "lucide-react";
 import PricingCalculator from "@/components/PricingCalculator";
+import ComparisonRadar, { RadarDataPoint } from "@/components/ComparisonRadar";
 
 export async function generateMetadata({
   params,
@@ -30,33 +31,34 @@ export default async function ComparisonPage({
   params: Promise<{ slug: string }>;
 }) {
   const { slug } = await params;
-  
+
   const comparison = await prisma.comparison.findUnique({
     where: { slug },
     include: {
       productA: true,
       productB: true,
-      features: true, 
+      features: true,
     },
   });
 
   if (!comparison) return notFound();
 
-  const winnerName = comparison.winner; 
+  const winnerName = comparison.winner;
   const isAWinner = winnerName === comparison.productA.name;
+  const radarData = (comparison.radarData as unknown as RadarDataPoint[]) || [];
 
   return (
     <main className="min-h-screen bg-slate-950 pb-24">
-      
+
       <section className="relative border-b border-slate-800 bg-slate-900 py-16 md:py-24">
         <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_top,_var(--tw-gradient-stops))] from-indigo-900/10 via-slate-900 to-slate-900" />
-        
-        <div className="relative mx-auto max-w-5xl px-6 text-center">        
+
+        <div className="relative mx-auto max-w-5xl px-6 text-center">
 
           <h1 className="mb-6 text-4xl font-extrabold text-white md:text-6xl">
             {comparison.productA.name} <span className="text-slate-600">vs</span> {comparison.productB.name}
           </h1>
-          
+
           <p className="mx-auto max-w-3xl text-lg leading-relaxed text-slate-400">
             {comparison.summary}
           </p>
@@ -64,7 +66,7 @@ export default async function ComparisonPage({
       </section>
 
       <div className="mx-auto max-w-5xl px-6">
-        
+
         <div className="-mt-12 relative z-10 overflow-hidden rounded-2xl border border-slate-800 bg-slate-950 shadow-2xl">
           <ComparisonTable
             productA={comparison.productA.name}
@@ -76,17 +78,24 @@ export default async function ComparisonPage({
           />
         </div>
         <section id="pricing-calculator" className="mt-16">
+          {radarData.length > 0 && (
+            <ComparisonRadar
+              productA={comparison.productA.name}
+              productB={comparison.productB.name}
+              data={radarData}
+            />
+          )}
           <h2 className="text-2xl font-bold text-white text-center mb-6">
             Calculate Your Monthly Cost
           </h2>
-          
-          <PricingCalculator 
+
+          <PricingCalculator
             productA={comparison.productA.name}
             productB={comparison.productB.name}
-            
-            priceA={comparison.productA.basePrice} 
+
+            priceA={comparison.productA.basePrice}
             priceB={comparison.productB.basePrice}
-            isPerUserA={comparison.productA.isPerUser} 
+            isPerUserA={comparison.productA.isPerUser}
             isPerUserB={comparison.productB.isPerUser}
           />
         </section>
@@ -94,9 +103,9 @@ export default async function ComparisonPage({
         <section className="mt-20">
           <h2 className="mb-8 text-center text-2xl font-bold text-white">Deep Dive into Each Tool</h2>
           <div className="grid gap-6 md:grid-cols-2">
-            
-            <Link 
-              href={`/reviews/${comparison.productA.slug}`} 
+
+            <Link
+              href={`/reviews/${comparison.productA.slug}`}
               className="group relative overflow-hidden rounded-2xl border border-slate-800 bg-slate-900 p-8 transition hover:-translate-y-1 hover:border-indigo-500/50"
             >
               <div className="flex items-start justify-between">
@@ -115,8 +124,8 @@ export default async function ComparisonPage({
               </div>
             </Link>
 
-            <Link 
-              href={`/reviews/${comparison.productB.slug}`} 
+            <Link
+              href={`/reviews/${comparison.productB.slug}`}
               className="group relative overflow-hidden rounded-2xl border border-slate-800 bg-slate-900 p-8 transition hover:-translate-y-1 hover:border-indigo-500/50"
             >
               <div className="flex items-start justify-between">
@@ -146,13 +155,13 @@ export default async function ComparisonPage({
           <p className="mx-auto max-w-2xl text-lg text-slate-300 mb-8">
             <span className="font-bold text-emerald-400">{comparison.winner}</span> is the better choice for most teams based on automation depth and scalability.
           </p>
-          
+
           <div className="flex justify-center">
-            <a 
-               href={isAWinner ? comparison.productA.affiliateUrl : comparison.productB.affiliateUrl}
-               target="_blank"
-               rel="noopener noreferrer nofollow"
-               className="inline-flex items-center gap-2 rounded-full bg-emerald-600 px-8 py-4 text-lg font-bold text-white shadow-lg shadow-emerald-900/20 transition hover:bg-emerald-500 hover:scale-105"
+            <a
+              href={isAWinner ? comparison.productA.affiliateUrl : comparison.productB.affiliateUrl}
+              target="_blank"
+              rel="noopener noreferrer nofollow"
+              className="inline-flex items-center gap-2 rounded-full bg-emerald-600 px-8 py-4 text-lg font-bold text-white shadow-lg shadow-emerald-900/20 transition hover:bg-emerald-500 hover:scale-105"
             >
               Get The Best Deal on {comparison.winner} <ArrowRight size={20} />
             </a>

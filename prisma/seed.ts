@@ -3,14 +3,12 @@ import {prisma } from "../lib/prisma";
 async function main() {
   console.log("🌱 Seeding database...");
 
-  // 1️⃣ Clean dependent tables FIRST
   await prisma.comparisonFeature.deleteMany();
   await prisma.comparison.deleteMany();
   await prisma.review.deleteMany();
   await prisma.product.deleteMany();
   await prisma.author.deleteMany();
 
-  // 2️⃣ Create Author FIRST
   const author = await prisma.author.create({
     data: {
       name: "Ayush Saini",
@@ -22,7 +20,6 @@ async function main() {
     },
   });
 
-  // 3️⃣ Create Products
   const activeCampaign = await prisma.product.create({
     data: {
       name: "ActiveCampaign",
@@ -55,7 +52,6 @@ async function main() {
     },
   });
 
-  // 4️⃣ Reviews
   await prisma.review.createMany({
     data: [
       {
@@ -88,6 +84,13 @@ async function main() {
       winner: "ActiveCampaign",
       productAId: activeCampaign.id,
       productBId: hubspot.id,
+      radarData: [
+      { subject: 'Automation', A: 10, B: 6, fullMark: 10 },
+      { subject: 'Ease of Use', A: 6, B: 9, fullMark: 10 },
+      { subject: 'Support', A: 8, B: 8, fullMark: 10 },
+      { subject: 'Pricing', A: 9, B: 5, fullMark: 10 },
+      { subject: 'Integrations', A: 8, B: 10, fullMark: 10 },
+    ],
     },
   });
 

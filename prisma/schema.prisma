@@ -52,6 +52,7 @@ model Comparison {
   slug       String   @unique
   summary    String
   winner     String
+  radarData   Json?
 
   productA   Product @relation("ProductA", fields: [productAId], references: [id])
   productB   Product @relation("ProductB", fields: [productBId], references: [id])
