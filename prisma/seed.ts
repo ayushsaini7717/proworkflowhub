@@ -1,14 +1,17 @@
-import {prisma } from "../lib/prisma";
+import { prisma } from "../lib/prisma";
 
 async function main() {
   console.log("🌱 Seeding database...");
 
+  // 1. CLEANUP: Delete in correct order to avoid foreign key errors
   await prisma.comparisonFeature.deleteMany();
   await prisma.comparison.deleteMany();
   await prisma.review.deleteMany();
   await prisma.product.deleteMany();
+  await prisma.category.deleteMany(); // Added this
   await prisma.author.deleteMany();
 
+  // 2. CREATE AUTHOR
   const author = await prisma.author.create({
     data: {
       name: "Ayush Saini",
@@ -20,19 +23,41 @@ async function main() {
     },
   });
 
+  // 3. CREATE CATEGORIES (Create these BEFORE products)
+  const crm = await prisma.category.create({
+    data: {
+      name: 'CRM & Sales',
+      slug: 'crm',
+      description: 'Manage customer relationships and pipelines.',
+      icon: 'Users', 
+    },
+  });
+
+  const projectMgmt = await prisma.category.create({
+    data: {
+      name: 'Project Management',
+      slug: 'project-management',
+      description: 'Organize tasks, sprints, and roadmaps.',
+      icon: 'KanbanSquare',
+    },
+  });
+
+  // 4. CREATE PRODUCTS (Now linked to Category and Author)
   const activeCampaign = await prisma.product.create({
     data: {
       name: "ActiveCampaign",
       slug: "activecampaign",
-      description:
-        "Advanced email marketing and CRM automation for growing businesses.",
+      description: "Advanced email marketing and CRM automation for growing businesses.",
       websiteUrl: "https://www.activecampaign.com",
       affiliateUrl: "https://affiliate-link-activecampaign",
       pricingSummary: "$29/month and up",
       logoUrl: "/logos/activecampaign.png",
-      authorId: author.id,
       basePrice: 29.00,
       isPerUser: false,
+      
+      // Relations
+      authorId: author.id,
+      categoryId: crm.id, // ✅ Linked to CRM Category
     },
   });
 
@@ -40,18 +65,21 @@ async function main() {
     data: {
       name: "HubSpot",
       slug: "hubspot",
-      description:
-        "All-in-one CRM platform for marketing, sales, and customer service.",
+      description: "All-in-one CRM platform for marketing, sales, and customer service.",
       websiteUrl: "https://www.hubspot.com",
       affiliateUrl: "https://affiliate-link-hubspot",
       pricingSummary: "Free + paid plans",
       logoUrl: "/logos/hubspot.png",
-      authorId: author.id,
       basePrice: 50.00, 
       isPerUser: true,
+
+      // Relations
+      authorId: author.id,
+      categoryId: crm.id, // ✅ Linked to CRM Category
     },
   });
 
+  // 5. CREATE REVIEWS
   await prisma.review.createMany({
     data: [
       {
@@ -60,8 +88,7 @@ async function main() {
         testedDays: 14,
         pros: "Powerful automations, deep segmentation",
         cons: "Learning curve for beginners",
-        verdict:
-          "Best for agencies and teams needing advanced automation.",
+        verdict: "Best for agencies and teams needing advanced automation.",
       },
       {
         productId: hubspot.id,
@@ -69,32 +96,30 @@ async function main() {
         testedDays: 10,
         pros: "Great UI, strong ecosystem",
         cons: "Gets expensive at scale",
-        verdict:
-          "Ideal for teams wanting an all-in-one CRM with minimal setup.",
+        verdict: "Ideal for teams wanting an all-in-one CRM with minimal setup.",
       },
     ],
   });
 
-  // 5️⃣ Comparison
+  // 6. CREATE COMPARISON
   const comparison = await prisma.comparison.create({
     data: {
       slug: "activecampaign-vs-hubspot-for-agencies",
-      summary:
-        "ActiveCampaign offers deeper automation, while HubSpot wins on ease of use.",
+      summary: "ActiveCampaign offers deeper automation, while HubSpot wins on ease of use.",
       winner: "ActiveCampaign",
       productAId: activeCampaign.id,
       productBId: hubspot.id,
+      
       radarData: [
-      { subject: 'Automation', A: 10, B: 6, fullMark: 10 },
-      { subject: 'Ease of Use', A: 6, B: 9, fullMark: 10 },
-      { subject: 'Support', A: 8, B: 8, fullMark: 10 },
-      { subject: 'Pricing', A: 9, B: 5, fullMark: 10 },
-      { subject: 'Integrations', A: 8, B: 10, fullMark: 10 },
-    ],
+        { subject: 'Automation', A: 10, B: 6, fullMark: 10 },
+        { subject: 'Ease of Use', A: 6, B: 9, fullMark: 10 },
+        { subject: 'Support', A: 8, B: 8, fullMark: 10 },
+        { subject: 'Pricing', A: 9, B: 5, fullMark: 10 },
+        { subject: 'Integrations', A: 8, B: 10, fullMark: 10 },
+      ],
     },
   });
 
-  // 6️⃣ Comparison Features
   await prisma.comparisonFeature.createMany({
     data: [
       {

@@ -22,11 +22,22 @@ export async function getProductComparisons(productId: string) {
  * Get related products (same category later)
  * For now: simple fallback (all others)
  */
-export async function getRelatedProducts(productId: string) {
-  return prisma.product.findMany({
-    where: {
-      NOT: { id: productId },
-    },
-    take: 4,
+export async function getRelatedProducts(currentProductId: string) {
+  const currentProduct = await prisma.product.findUnique({
+    where: { id: currentProductId },
+    select: { categoryId: true },
   });
+
+  if (!currentProduct?.categoryId) return [];
+
+  const related = await prisma.product.findMany({
+    where: {
+      categoryId: currentProduct.categoryId,
+      id: { not: currentProductId }, 
+    },
+    take: 3,
+    select: { id: true, name: true, slug: true },
+  });
+
+  return related;
 }

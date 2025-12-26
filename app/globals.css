@@ -108,3 +108,8 @@ body {
     margin-bottom: 2rem;
   }
 }
+
+html {
+  scroll-behavior: smooth;
+  scroll-padding-top: 100px; 
+}

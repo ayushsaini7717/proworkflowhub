@@ -32,6 +32,8 @@ model Product {
   comparisonsB    Comparison[] @relation("ProductB")
   authorId String?
   author   Author? @relation(fields: [authorId], references: [id])
+  categoryId String?
+  category   Category? @relation(fields: [categoryId], references: [id])
 }
 
 model Review {
@@ -93,3 +95,13 @@ model Author {
   products    Product[]
 }
 
+model Category {
+  id          String    @id @default(uuid())
+  name        String    // e.g. "Email Marketing"
+  slug        String    @unique // e.g. "email-marketing"
+  description String?
+  icon        String?   // e.g. "Mail" or "LayoutGrid" (store the Lucide icon name)
+  
+  products    Product[]
+  createdAt   DateTime  @default(now())
+}

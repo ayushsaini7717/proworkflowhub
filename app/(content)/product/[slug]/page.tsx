@@ -21,6 +21,8 @@ import {
 import EmailCapture from "@/components/EmailCapture";
 import AuthorBox from "@/components/AuthorBox";
 import AffiliateCTA from "@/components/AffiliateCTA";
+import TableOfContents from "@/components/TableOfContents";
+
 
 export async function generateMetadata({
   params,
@@ -129,6 +131,7 @@ export default async function ProductPage({
 
         <aside className="hidden lg:block lg:col-span-4">
           <div className="sticky top-24 space-y-8">
+            <TableOfContents />
 
             <div className="rounded-2xl border border-indigo-500/30 bg-indigo-500/10 p-6 shadow-2xl">
               <h3 className="mb-2 text-lg font-bold text-white">Ready to get started?</h3>
