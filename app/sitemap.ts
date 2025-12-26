@@ -2,7 +2,7 @@ import { MetadataRoute } from "next";
 import { prisma } from "@/lib/prisma";
 
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
-  const baseUrl = "https://theproworkflowhub.com";
+  const baseUrl = "https://proworkflowhub.vercel.app/";
 
   const products = await prisma.product.findMany({ select: { slug: true, createdAt: true } });
   const categories = await prisma.category.findMany({ select: { slug: true } });
