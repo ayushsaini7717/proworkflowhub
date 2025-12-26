@@ -1,10 +1,13 @@
 import { NextResponse } from "next/server";
 import type { NextRequest } from "next/server";
 
-export function middleware(req: NextRequest) {
+export function proxy(req: NextRequest) {
+  // Debug log to verify proxy execution
+  console.log("Proxy executing for:", req.nextUrl.pathname);
+
   // 1. Check if the user is trying to access the /admin route
   if (req.nextUrl.pathname.startsWith("/admin")) {
-    
+
     // 2. Get the Authorization header
     const basicAuth = req.headers.get("authorization");
 
