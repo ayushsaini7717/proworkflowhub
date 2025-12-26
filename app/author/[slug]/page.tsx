@@ -127,7 +127,7 @@ export default async function AuthorPage({
             {author.products.map((product) => (
               <Link
                 key={product.id}
-                href={`/reviews/${product.slug}`}
+                href={`/product/${product.slug}`}
                 className="group relative overflow-hidden rounded-2xl border border-slate-800 bg-slate-900 p-6 transition hover:-translate-y-1 hover:border-indigo-500/50 hover:shadow-2xl"
               >
                 <div className="mb-4 flex items-center justify-between">

@@ -22,7 +22,7 @@ import EmailCapture from "@/components/EmailCapture";
 import AuthorBox from "@/components/AuthorBox";
 import AffiliateCTA from "@/components/AffiliateCTA";
 import TableOfContents from "@/components/TableOfContents";
-
+import ReviewSummary from "@/components/ReviewSummary";
 
 export async function generateMetadata({
   params,
@@ -49,7 +49,10 @@ export default async function ProductPage({
 
   const product = await prisma.product.findUnique({
     where: { slug },
-    include: { author: true },
+    include: { 
+      author: true,
+      reviews: true,
+    },
   });
 
   if (!product) return notFound();
@@ -63,13 +66,7 @@ export default async function ProductPage({
 
       <header className="border-b border-slate-800 bg-slate-900 py-12 md:py-20">
         <div className="mx-auto max-w-7xl px-6">
-          <div className="mb-6 flex items-center gap-2 text-xs font-bold uppercase tracking-widest text-slate-500">
-            <Link href="/" className="hover:text-white transition">Home</Link>
-            <ChevronRight size={12} />
-            <Link href="/reviews" className="hover:text-white transition">Reviews</Link>
-            <ChevronRight size={12} />
-            <span className="text-indigo-400">Software</span>
-          </div>
+          
 
           <div className="flex flex-col gap-6 md:flex-row md:items-start md:justify-between">
             <div className="max-w-3xl">
@@ -103,6 +100,9 @@ export default async function ProductPage({
 
         <main className="lg:col-span-8">
 
+          {product.reviews && product.reviews.length > 0 && (
+            <ReviewSummary review={product.reviews[0]} />
+          )}
           {review && (
             <article className="max-w-none">
               <MarkdownRenderer content={review.content} />

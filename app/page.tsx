@@ -1,26 +1,144 @@
+import Link from "next/link";
 import { prisma } from "@/lib/prisma";
+import { ArrowRight, Search, CheckCircle2, TrendingUp, Layers } from "lucide-react";
+import { CommandMenu } from "@/components/CommandMenu"; // Reuse your search
 
-export default async function Home() {
-  const products = await prisma.product.findMany({
-    take: 5,
+// Helper to get trending products (you can add a 'isTrending' boolean to DB later)
+async function getTrendingData() {
+  const trending = await prisma.product.findMany({
+    take: 3,
+    orderBy: { basePrice: 'desc' }, // Just a proxy for "popular" for now
+    include: { category: true }
+  });
+  
+  const categories = await prisma.category.findMany({
+    include: { _count: { select: { products: true } } }
   });
 
-  return (
-    <main className="p-8">
-      <h1 className="text-3xl font-bold">
-        The Pro-Workflow Hub
-      </h1>
+  return { trending, categories };
+}
 
-      <ul className="mt-6 space-y-4">
-        {products.map((product) => (
-          <li key={product.id} className="border p-4 rounded">
-            <h2 className="font-semibold">{product.name}</h2>
-            <p className="text-sm text-gray-600">
-              {product.pricingSummary}
-            </p>
-          </li>
-        ))}
-      </ul>
-    </main>
+export default async function HomePage() {
+  const { trending, categories } = await getTrendingData();
+
+  return (
+    <div className="min-h-screen bg-slate-950">
+      
+      {/* 1. HERO SECTION */}
+      <section className="relative border-b border-slate-800 bg-[url('/grid-pattern.svg')] bg-center pt-24 pb-32">
+        {/* Background Gradient */}
+        <div className="absolute inset-0 bg-gradient-to-b from-transparent to-slate-950/90" />
+        
+        <div className="relative mx-auto max-w-5xl px-6 text-center">
+          <div className="mb-6 inline-flex items-center gap-2 rounded-full border border-indigo-500/30 bg-indigo-500/10 px-4 py-1.5 text-sm font-bold text-indigo-400">
+            <CheckCircle2 size={16} /> 100% Unbiased for Founders & Devs
+          </div>
+          
+          <h1 className="mb-6 text-5xl font-extrabold tracking-tight text-white md:text-7xl">
+            Stop guessing. <br />
+            <span className="bg-gradient-to-r from-indigo-400 to-emerald-400 bg-clip-text text-transparent">
+              Start building.
+            </span>
+          </h1>
+          
+          <p className="mx-auto mb-10 max-w-2xl text-xl text-slate-400">
+            The ProWorkflow Hub tests SaaS tools with real code and real workflows. 
+            No fluff, just the data you need to pick your stack.
+          </p>
+
+          <div className="flex flex-col items-center justify-center gap-4 sm:flex-row">
+            <Link 
+              href="/reviews"
+              className="flex h-12 items-center gap-2 rounded-full bg-indigo-600 px-8 font-bold text-white transition hover:bg-indigo-500"
+            >
+              Browse Reviews <ArrowRight size={18} />
+            </Link>
+            <Link 
+              href="/comparisons"
+              className="flex h-12 items-center gap-2 rounded-full border border-slate-700 bg-slate-800 px-8 font-bold text-white transition hover:bg-slate-700"
+            >
+              See Comparisons
+            </Link>
+          </div>
+        </div>
+      </section>
+
+      {/* 2. CATEGORY GRID */}
+      <section className="py-20">
+        <div className="mx-auto max-w-7xl px-6">
+          <div className="mb-12 flex items-center justify-between">
+            <h2 className="text-2xl font-bold text-white">Explore by Category</h2>
+            <Link href="/categories" className="text-sm font-bold text-indigo-400 hover:text-indigo-300">
+              View all &rarr;
+            </Link>
+          </div>
+
+          <div className="grid gap-6 md:grid-cols-3">
+            {categories.map((cat) => (
+              <Link 
+                key={cat.id}
+                href={`/software/${cat.slug}`}
+                className="group relative overflow-hidden rounded-2xl border border-slate-800 bg-slate-900/50 p-8 transition hover:border-indigo-500/50"
+              >
+                <div className="mb-4 inline-flex h-12 w-12 items-center justify-center rounded-xl bg-indigo-500/10 text-indigo-400 group-hover:scale-110 transition">
+                  <Layers size={24} />
+                </div>
+                <h3 className="mb-2 text-xl font-bold text-white">{cat.name}</h3>
+                <p className="text-sm text-slate-400 mb-4">{cat.description}</p>
+                <div className="text-xs font-bold text-slate-500 group-hover:text-indigo-400">
+                  {cat._count.products} tools reviewed
+                </div>
+              </Link>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* 3. TRENDING REVIEWS */}
+      <section className="border-t border-slate-800 bg-slate-900/30 py-20">
+        <div className="mx-auto max-w-7xl px-6">
+          <div className="mb-12 flex items-center gap-3">
+            <div className="flex h-10 w-10 items-center justify-center rounded-full bg-emerald-500/10 text-emerald-500">
+              <TrendingUp size={20} />
+            </div>
+            <h2 className="text-2xl font-bold text-white">Trending This Week</h2>
+          </div>
+
+          <div className="grid gap-8 lg:grid-cols-3">
+            {trending.map((product) => (
+              <Link 
+                key={product.id}
+                href={`/product/${product.slug}`}
+                className="flex flex-col rounded-2xl bg-slate-950 border border-slate-800 overflow-hidden hover:shadow-2xl transition hover:-translate-y-1"
+              >
+                {/* Fake Image Placeholder */}
+                <div className="h-48 w-full bg-slate-800 flex items-center justify-center text-slate-600">
+                   {product.logoUrl ? (
+                     <img src={product.logoUrl} alt={product.name} className="h-12 opacity-50" />
+                   ) : (
+                     <span className="font-bold text-2xl opacity-20">{product.name}</span>
+                   )}
+                </div>
+                
+                <div className="p-6 flex-1 flex flex-col">
+                  <div className="mb-3 text-xs font-bold uppercase tracking-wider text-emerald-400">
+                    {product.category?.name}
+                  </div>
+                  <h3 className="mb-2 text-xl font-bold text-white">{product.name} Review</h3>
+                  <p className="mb-4 text-sm text-slate-400 line-clamp-2">
+                    {product.description}
+                  </p>
+                  <div className="mt-auto flex items-center justify-between border-t border-slate-800 pt-4">
+                    <span className="text-xs font-medium text-slate-500">Updated Dec 2025</span>
+                    <span className="text-sm font-bold text-white">Read Review &rarr;</span>
+                  </div>
+                </div>
+              </Link>
+            ))}
+          </div>
+        </div>
+      </section>
+      
+    </div>
   );
 }
