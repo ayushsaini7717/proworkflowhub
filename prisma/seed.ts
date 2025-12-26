@@ -34,6 +34,8 @@ async function main() {
       pricingSummary: "$29/month and up",
       logoUrl: "/logos/activecampaign.png",
       authorId: author.id,
+      basePrice: 29.00,
+      isPerUser: false,
     },
   });
 
@@ -48,6 +50,8 @@ async function main() {
       pricingSummary: "Free + paid plans",
       logoUrl: "/logos/hubspot.png",
       authorId: author.id,
+      basePrice: 50.00, 
+      isPerUser: true,
     },
   });
 

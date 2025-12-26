@@ -23,6 +23,8 @@ model Product {
   affiliateUrl    String
   pricingSummary  String
   logoUrl         String?
+  basePrice       Float    @default(0)
+  isPerUser       Boolean  @default(true)
   createdAt       DateTime @default(now())
 
   reviews         Review[]

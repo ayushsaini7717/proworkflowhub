@@ -3,6 +3,7 @@ import ComparisonTable from "@/components/ComparisonTable";
 import { notFound } from "next/navigation";
 import Link from "next/link";
 import { ChevronRight, FileText, Trophy, ArrowRight } from "lucide-react";
+import PricingCalculator from "@/components/PricingCalculator";
 
 export async function generateMetadata({
   params,
@@ -74,6 +75,21 @@ export default async function ComparisonPage({
             features={comparison.features}
           />
         </div>
+        <section id="pricing-calculator" className="mt-16">
+          <h2 className="text-2xl font-bold text-white text-center mb-6">
+            Calculate Your Monthly Cost
+          </h2>
+          
+          <PricingCalculator 
+            productA={comparison.productA.name}
+            productB={comparison.productB.name}
+            
+            priceA={comparison.productA.basePrice} 
+            priceB={comparison.productB.basePrice}
+            isPerUserA={comparison.productA.isPerUser} 
+            isPerUserB={comparison.productB.isPerUser}
+          />
+        </section>
 
         <section className="mt-20">
           <h2 className="mb-8 text-center text-2xl font-bold text-white">Deep Dive into Each Tool</h2>

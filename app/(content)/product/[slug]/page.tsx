@@ -102,7 +102,6 @@ export default async function ProductPage({
         <main className="lg:col-span-8">
 
           {review && (
-            // ✅ CORRECTED: Only one article tag
             <article className="max-w-none">
               <MarkdownRenderer content={review.content} />
             </article>
@@ -174,7 +173,7 @@ export default async function ProductPage({
           __html: JSON.stringify(
             productReviewSchema({
               name: product.name,
-              rating: 9, // Ideally fetch this from DB
+              rating: 9, 
               description: product.description,
               slug: product.slug,
             })
