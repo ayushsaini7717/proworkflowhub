@@ -6,7 +6,6 @@ import Image from "next/image";
 import { authorSchema } from "@/lib/schema";
 import { Linkedin, Globe, MapPin, ChevronRight, FileText } from "lucide-react";
 
-/* ---------------- METADATA ---------------- */
 
 export async function generateMetadata({
   params,

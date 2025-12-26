@@ -2,9 +2,33 @@ import { notFound } from "next/navigation";
 import Link from "next/link";
 import { prisma } from "@/lib/prisma";
 import { ArrowRight, Star, Layers } from "lucide-react";
-import * as Icons from "lucide-react"; // Dynamic icon loading
+import * as Icons from "lucide-react";
+import type { Metadata } from "next";
 
-// Helper to render icon string
+
+export async function generateMetadata({
+  params
+}: {
+  params: Promise<{ category: string }>
+}): Promise<Metadata> {
+  const { category: slug } = await params;
+
+  const category = await prisma.category.findUnique({
+    where: { slug },
+  });
+
+  if (!category) return { title: "Category Not Found" };
+
+  return {
+    title: `Best ${category.name} Software (2025) - Top Rated Tools`,
+    description: category.description || `Compare the best ${category.name} tools. Pricing, features, and expert reviews.`,
+    openGraph: {
+      title: `Best ${category.name} Software (2025)`,
+      description: category.description || "In-depth comparisons.",
+    },
+  };
+}
+
 const DynamicIcon = ({ name, className }: { name: string; className?: string }) => {
   const IconComponent = (Icons as any)[name];
   return IconComponent ? <IconComponent className={className} /> : <Layers className={className} />;
