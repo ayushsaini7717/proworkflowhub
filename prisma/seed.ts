@@ -18,10 +18,10 @@ async function main() {
    */
   const author = await prisma.author.create({
     data: {
-      name: "Ayush Saini",
-      slug: "ayush-saini",
+      name: "Pro Workflow Hub",
+      slug: "Pro Workflow Hub",
       role: "Founder & Product Reviewer",
-      bio: "Ayush is a software engineer who reviews SaaS tools by testing them in real workflows used by modern product teams.",
+      bio: "Pro-workflow-hub is a platform which review and compare software to let you choose the best software for your need.",
       linkedinUrl: "https://linkedin.com/in/ayushsaini",
       websiteUrl: "https://theproworkflowhub.com",
     },
