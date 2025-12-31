@@ -10,7 +10,7 @@ async function getTrendingData() {
     orderBy: { basePrice: 'desc' }, // Just a proxy for "popular" for now
     include: { category: true }
   });
-  
+
   const categories = await prisma.category.findMany({
     include: { _count: { select: { products: true } } }
   });
@@ -23,37 +23,37 @@ export default async function HomePage() {
 
   return (
     <div className="min-h-screen bg-slate-950">
-      
+
       {/* 1. HERO SECTION */}
       <section className="relative border-b border-slate-800 bg-[url('/grid-pattern.svg')] bg-center pt-24 pb-32">
         {/* Background Gradient */}
         <div className="absolute inset-0 bg-gradient-to-b from-transparent to-slate-950/90" />
-        
+
         <div className="relative mx-auto max-w-5xl px-6 text-center">
           <div className="mb-6 inline-flex items-center gap-2 rounded-full border border-indigo-500/30 bg-indigo-500/10 px-4 py-1.5 text-sm font-bold text-indigo-400">
             <CheckCircle2 size={16} /> 100% Unbiased for Founders & Devs
           </div>
-          
+
           <h1 className="mb-6 text-5xl font-extrabold tracking-tight text-white md:text-7xl">
             Stop guessing. <br />
             <span className="bg-gradient-to-r from-indigo-400 to-emerald-400 bg-clip-text text-transparent">
               Start building.
             </span>
           </h1>
-          
+
           <p className="mx-auto mb-10 max-w-2xl text-xl text-slate-400">
-            The ProWorkflow Hub tests SaaS tools with real code and real workflows. 
+            The ProWorkflow Hub tests SaaS tools with real code and real workflows.
             No fluff, just the data you need to pick your stack.
           </p>
 
           <div className="flex flex-col items-center justify-center gap-4 sm:flex-row">
-            <Link 
+            <Link
               href="/reviews"
               className="flex h-12 items-center gap-2 rounded-full bg-indigo-600 px-8 font-bold text-white transition hover:bg-indigo-500"
             >
               Browse Reviews <ArrowRight size={18} />
             </Link>
-            <Link 
+            <Link
               href="/comparisons"
               className="flex h-12 items-center gap-2 rounded-full border border-slate-700 bg-slate-800 px-8 font-bold text-white transition hover:bg-slate-700"
             >
@@ -75,7 +75,7 @@ export default async function HomePage() {
 
           <div className="grid gap-6 md:grid-cols-3">
             {categories.map((cat) => (
-              <Link 
+              <Link
                 key={cat.id}
                 href={`/software/${cat.slug}`}
                 className="group relative overflow-hidden rounded-2xl border border-slate-800 bg-slate-900/50 p-8 transition hover:border-indigo-500/50"
@@ -106,20 +106,20 @@ export default async function HomePage() {
 
           <div className="grid gap-8 lg:grid-cols-3">
             {trending.map((product) => (
-              <Link 
+              <Link
                 key={product.id}
                 href={`/product/${product.slug}`}
                 className="flex flex-col rounded-2xl bg-slate-950 border border-slate-800 overflow-hidden hover:shadow-2xl transition hover:-translate-y-1"
               >
                 {/* Fake Image Placeholder */}
                 <div className="h-48 w-full bg-slate-800 flex items-center justify-center text-slate-600">
-                   {product.logoUrl ? (
-                     <img src={product.logoUrl} alt={product.name} className="h-12 opacity-50" />
-                   ) : (
-                     <span className="font-bold text-2xl opacity-20">{product.name}</span>
-                   )}
+                  {product.logoUrl ? (
+                    <img src={product.logoUrl} alt={product.name} className="h-full w-full object-cover" />
+                  ) : (
+                    <span className="font-bold text-2xl opacity-20">{product.name}</span>
+                  )}
                 </div>
-                
+
                 <div className="p-6 flex-1 flex flex-col">
                   <div className="mb-3 text-xs font-bold uppercase tracking-wider text-emerald-400">
                     {product.category?.name}
@@ -138,7 +138,7 @@ export default async function HomePage() {
           </div>
         </div>
       </section>
-      
+
     </div>
   );
 }
