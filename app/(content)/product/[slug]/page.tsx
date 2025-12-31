@@ -3,8 +3,7 @@ import { loadReviewBySlug } from "@/lib/loadReview";
 import { notFound } from "next/navigation";
 import MarkdownRenderer from "@/components/MarkdownRenderer";
 import type { Metadata } from "next";
-import Link from "next/link";
-import { ChevronRight, ShieldCheck, Star } from "lucide-react";
+import { ShieldCheck, Star } from "lucide-react";
 
 import {
   productReviewSchema,
@@ -23,6 +22,7 @@ import AuthorBox from "@/components/AuthorBox";
 import AffiliateCTA from "@/components/AffiliateCTA";
 import TableOfContents from "@/components/TableOfContents";
 import ReviewSummary from "@/components/ReviewSummary";
+import AnimatedDocWidget from "@/components/AnimatedDocWidget";
 
 export async function generateMetadata({
   params,
@@ -49,7 +49,7 @@ export default async function ProductPage({
 
   const product = await prisma.product.findUnique({
     where: { slug },
-    include: { 
+    include: {
       author: true,
       reviews: true,
     },
@@ -66,7 +66,7 @@ export default async function ProductPage({
 
       <header className="border-b border-slate-800 bg-slate-900 py-12 md:py-20">
         <div className="mx-auto max-w-7xl px-6">
-          
+
 
           <div className="flex flex-col gap-6 md:flex-row md:items-start md:justify-between">
             <div className="max-w-3xl">
@@ -114,6 +114,10 @@ export default async function ProductPage({
               <h2 className="mb-8 text-2xl font-bold text-white">Frequently Asked Questions</h2>
               <FAQBlock faqs={review?.meta?.faqs ?? []} />
             </div>
+          )}
+
+          {product.docHighlights && (
+            <AnimatedDocWidget docs={product.docHighlights} />
           )}
 
           {product.author && (
@@ -176,7 +180,7 @@ export default async function ProductPage({
           __html: JSON.stringify(
             productReviewSchema({
               name: product.name,
-              rating: 9, 
+              rating: 9,
               description: product.description,
               slug: product.slug,
             })

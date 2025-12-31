@@ -51,7 +51,24 @@ async function main() {
       websiteUrl: "https://linear.app",
       affiliateUrl: "https://linear.app/pricing",
       pricingSummary: "Free for small teams, paid plans from $8/user/month",
-      logoUrl: "/logos/linear.png",
+      logoUrl: "https://www.agentlocker.ai/static/uploads/7c87cdc4-705c-4640-8722-624123ce072b_linear.webp",
+      docHighlights: [
+      {
+        title: "How Cycles Work",
+        image: "https://static.linear.app/docs/cycles/cycles-active.png", // Copied from docs
+        link: "https://linear.app/docs/cycles"
+      },
+      {
+        title: "Git Automation",
+        image: "https://static.linear.app/docs/github/github-pr-link.png",
+        link: "https://linear.app/docs/github"
+      },
+      {
+        title: "Keyboard Shortcuts",
+        image: "https://static.linear.app/docs/navigation/command-line.png",
+        link: "https://linear.app/docs/keyboard-shortcuts"
+      }
+    ],
       basePrice: 8,
       isPerUser: true,
       authorId: author.id,
@@ -76,7 +93,7 @@ async function main() {
     },
   });
 
-  console.log("✅ Linear seeded successfully");
+  console.log("Linear seeded successfully");
 }
 
 main()

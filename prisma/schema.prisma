@@ -26,6 +26,7 @@ model Product {
   basePrice       Float    @default(0)
   isPerUser       Boolean  @default(true)
   createdAt       DateTime @default(now())
+  docHighlights  Json?  @default("[]")
 
   reviews         Review[]
   comparisonsA    Comparison[] @relation("ProductA")
