@@ -4,94 +4,112 @@ async function main() {
   console.log("🌱 Seeding Linear data only...");
 
   /**
-   * 1. CLEANUP (safe order)
+   * 1. CLEANUP (safe order) - SKIPPED to preserve data
    */
-  await prisma.comparisonFeature.deleteMany();
-  await prisma.comparison.deleteMany();
-  await prisma.review.deleteMany();
-  await prisma.product.deleteMany();
-  await prisma.category.deleteMany();
-  await prisma.author.deleteMany();
+  // await prisma.comparisonFeature.deleteMany();
+  // await prisma.comparison.deleteMany();
+  // await prisma.review.deleteMany();
+  // await prisma.product.deleteMany();
+  // await prisma.category.deleteMany();
+  // await prisma.author.deleteMany();
 
   /**
    * 2. AUTHOR (matches linear.md frontmatter)
    */
-  const author = await prisma.author.create({
-    data: {
-      name: "Pro Workflow Hub",
-      slug: "Pro Workflow Hub",
-      role: "Founder & Product Reviewer",
-      bio: "Pro-workflow-hub is a platform which review and compare software to let you choose the best software for your need.",
-      linkedinUrl: "https://linkedin.com/in/ayushsaini",
-      websiteUrl: "https://theproworkflowhub.com",
-    },
+  const authorData = {
+    name: "Pro Workflow Hub",
+    slug: "Pro Workflow Hub",
+    role: "Founder & Product Reviewer",
+    bio: "Pro-workflow-hub is a platform which review and compare software to let you choose the best software for your need.",
+    linkedinUrl: "",
+    websiteUrl: "",
+  };
+
+  const author = await prisma.author.upsert({
+    where: { slug: authorData.slug },
+    update: authorData,
+    create: authorData,
   });
 
   /**
    * 3. CATEGORY
    */
-  const projectManagement = await prisma.category.create({
-    data: {
-      name: "Project Management",
-      slug: "project-management",
-      description: "Tools for planning, tracking, and shipping software projects.",
-      icon: "KanbanSquare",
-    },
+  const categoryData = {
+    name: "Project Management",
+    slug: "project-management",
+    description: "Tools for planning, tracking, and shipping software projects.",
+    icon: "KanbanSquare",
+  };
+
+  const projectManagement = await prisma.category.upsert({
+    where: { slug: categoryData.slug },
+    update: categoryData,
+    create: categoryData,
   });
 
   /**
    * 4. PRODUCT — LINEAR (REAL DATA)
    */
-  const linear = await prisma.product.create({
-    data: {
-      name: "Linear",
-      slug: "linear",
-      description:
-        "Linear is a modern issue tracking and project management tool built for fast-moving software teams.",
-      websiteUrl: "https://linear.app",
-      affiliateUrl: "https://linear.app/pricing",
-      pricingSummary: "Free for small teams, paid plans from $8/user/month",
-      logoUrl: "https://www.agentlocker.ai/static/uploads/7c87cdc4-705c-4640-8722-624123ce072b_linear.webp",
-      docHighlights: [
-      {
-        title: "How Cycles Work",
-        image: "https://static.linear.app/docs/cycles/cycles-active.png", // Copied from docs
-        link: "https://linear.app/docs/cycles"
-      },
-      {
-        title: "Git Automation",
-        image: "https://static.linear.app/docs/github/github-pr-link.png",
-        link: "https://linear.app/docs/github"
-      },
-      {
-        title: "Keyboard Shortcuts",
-        image: "https://static.linear.app/docs/navigation/command-line.png",
-        link: "https://linear.app/docs/keyboard-shortcuts"
-      }
+  const productData = {
+    name: "Jira Software",
+    slug: "jira-software",
+    description:
+      "Jira Software is a powerful issue and project tracking tool used by teams to plan, track, and manage software development at scale.",
+    websiteUrl: "https://www.atlassian.com/software/jira",
+    affiliateUrl: "https://www.atlassian.com/software/jira/pricing",
+    pricingSummary: "Free plan available · Paid plans from $7.75/user/month",
+    logoUrl: "/logos/jira.png",
+    basePrice: 7.75,
+    isPerUser: true,
+
+    docHighlights: [
+      "Highly customizable workflows",
+      "Advanced reporting and dashboards",
+      "Strong Jira ecosystem & marketplace",
+      "Scales well for large teams",
     ],
-      basePrice: 8,
-      isPerUser: true,
-      authorId: author.id,
-      categoryId: projectManagement.id,
-    },
+
+    authorId: author.id,
+    categoryId: projectManagement.id,
+  };
+
+  const jira = await prisma.product.upsert({
+    where: { slug: productData.slug },
+    update: productData,
+    create: productData,
   });
 
   /**
    * 5. REVIEW — mirrors linear.md content
    */
-  await prisma.review.create({
-    data: {
-      productId: linear.id,
-      rating: 9,
-      testedDays: 21,
-      pros:
-        "Extremely fast UI, keyboard-first workflow, excellent GitHub and Slack integrations",
-      cons:
-        "Limited customization and not ideal for non-technical teams",
-      verdict:
-        "One of the best issue tracking tools for modern software teams that value speed and focus.",
+  const reviewData = {
+    productId: jira.id,
+    rating: 7,
+    testedDays: 30,
+    pros:
+      "Extremely customizable, powerful reporting, massive plugin ecosystem",
+    cons:
+      "Slow UI, steep learning curve, overkill for small teams",
+    verdict:
+      "Best suited for large or process-heavy teams that need deep customization and control.",
+  };
+
+  // Check if this specific review already exists to avoid duplicates
+  const existingReview = await prisma.review.findFirst({
+    where: {
+      productId: jira.id,
+      verdict: reviewData.verdict, // Assuming verdict is unique enough for this seed
     },
   });
+
+  if (!existingReview) {
+    await prisma.review.create({
+      data: reviewData,
+    });
+    console.log("Review created.");
+  } else {
+    console.log("Review already exists, skipping.");
+  }
 
   console.log("Linear seeded successfully");
 }
@@ -105,3 +123,4 @@ main()
   .finally(async () => {
     await prisma.$disconnect();
   });
+
