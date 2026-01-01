@@ -98,7 +98,7 @@ export default async function ProductPage({
 
       <div className="mx-auto grid max-w-7xl gap-12 px-6 py-12 lg:grid-cols-12">
 
-        <main className="lg:col-span-8">
+        <main className="min-w-0 lg:col-span-8">
 
           {product.reviews && product.reviews.length > 0 && (
             <ReviewSummary review={product.reviews[0]} />

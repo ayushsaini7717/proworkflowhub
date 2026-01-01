@@ -36,7 +36,6 @@ export default function EmailCapture({
     }
   }
 
-  // SUCCESS STATE
   if (submitted) {
     return (
       <div className="rounded-2xl border border-emerald-500/20 bg-emerald-500/5 p-8 text-center shadow-lg">
