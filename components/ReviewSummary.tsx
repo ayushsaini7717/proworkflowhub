@@ -26,7 +26,7 @@ export default function ReviewSummary({ review }: { review: ReviewData }) {
 
         <div className="flex flex-wrap items-center gap-4 md:gap-6">
           {/* Days Tested Badge */}
-          <div className="flex items-center gap-2 text-sm font-medium text-slate-300">
+          {/* <div className="flex items-center gap-2 text-sm font-medium text-slate-300">
             <div className="flex h-8 w-8 items-center justify-center rounded-full bg-slate-800 text-slate-400">
               <Calendar size={16} />
             </div>
@@ -34,7 +34,7 @@ export default function ReviewSummary({ review }: { review: ReviewData }) {
               <div className="text-[10px] uppercase text-slate-500 font-bold tracking-wider">Tested For</div>
               <div>{review.testedDays} Days</div>
             </div>
-          </div>
+          </div> */}
 
           {/* Rating Badge */}
           <div className="flex items-center gap-3 rounded-xl bg-slate-900 px-4 py-2 border border-slate-800">

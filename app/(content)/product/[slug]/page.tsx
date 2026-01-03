@@ -74,7 +74,7 @@ export default async function ProductPage({
                 <ShieldCheck size={14} /> Verified Analysis
               </div>
               <h1 className="mb-4 text-4xl font-extrabold text-white md:text-5xl lg:text-6xl">
-                {product.name} Review
+                {product.name}
               </h1>
               <p className="text-xl leading-relaxed text-slate-400">
                 {product.description}
