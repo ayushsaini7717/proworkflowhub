@@ -12,7 +12,6 @@ async function main() {
   // await prisma.product.deleteMany();
   // await prisma.category.deleteMany();
   // await prisma.author.deleteMany();
-
   /**
    * 2. AUTHOR (matches linear.md frontmatter)
    */
